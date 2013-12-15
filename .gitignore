@@ -1,0 +1,17 @@
+flickrwall_out.log
+flickrwall_err.log
+**/*.*.cache
+**/*.egg
+*.egg
+*.egg-info
+/bin
+/include
+/lib
+/share
+.Python
+README.html
+*.bak*
+*.sw?
+*.sublime-project
+*.sublime-workspace
+.coverage
