@@ -46,6 +46,10 @@ You can change the parameters laters by editing the `.flickrwall` configuration
 file. After changing it, you need to run `flickrwall-install.py` again
 to update and reload the launchctl daemon.
 
+XXX ... set up the screensaver and the desktop wallpaper to use the
+```~/Downloads/iWallpaper``` folder.
+
+
 ## About the Flickr API key ##
 
 Why do you need your own Flickr API key? Because the app needs one, but I
