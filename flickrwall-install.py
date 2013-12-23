@@ -5,16 +5,15 @@ import sys
 import os
 import plistlib
 import ConfigParser
+import subprocess
 
 from flickrwall import (
     CONFIG_FILE_NAME,
     CONFIG_SECTION,
     get_config,
+    here_path,
 )
 
-
-def here_path():
-    return os.path.abspath(os.path.dirname(sys.modules[__name__].__file__))
 
 def gen_plist(o):
     here = here_path()
@@ -22,14 +21,16 @@ def gen_plist(o):
     plist = {}
     plist['RunAtLoad'] = True
     plist['Label'] = 'local.flickrwall'
-    plist['StandardOutPath'] = os.path.join(here, 'flickrwall_out.log')
-    plist['StandardErrorPath'] = os.path.join(here, 'flickrwall_err.log')
-    plist['StartCalendarInterval'] = dict(Hour=4, Minute=34)
+    plist['StandardOutPath'] = o['logfile_out']
+    plist['StandardErrorPath'] = o['logfile_err']
+    plist['StartCalendarInterval'] = dict(Hour=o['launch_hour'], Minute=o['launch_minute'])
     plist['ProgramArguments'] = [
         os.path.join(here, 'bin', 'python'),
         os.path.join(here, 'flickrwall.py'),
     ]
     plistlib.writePlist(plist, plist_path)
+    subprocess.call(['launchctl', 'unload', '-w', plist_path])
+    subprocess.call(['launchctl', 'load', '-w', plist_path])
 
 
 def gen_config(**kw):

@@ -3,6 +3,7 @@ from __future__ import print_function
 
 import flickrapi
 import os
+import sys
 import time
 import datetime
 import re
@@ -18,13 +19,21 @@ socket.setdefaulttimeout(timeout)
 CONFIG_FILE_NAME = '.flickrwall'
 CONFIG_SECTION = 'flickrwall'
 
+def here_path():
+    return os.path.abspath(os.path.dirname(sys.modules[__name__].__file__))
+
 def get_config():
     home = os.path.expanduser("~")
     path = os.path.join(home, CONFIG_FILE_NAME)
+    here = here_path()
     o = dict(
         base_dir=os.path.join(home, 'Downloads', 'iWallpaper'),
         download_nr=20,
         flush_days=30,
+        logfile_out=os.path.join(here, 'flickrwall_out.log'),
+        logfile_err=os.path.join(here, 'flickrwall_err.log'),
+        launch_hour=4,
+        launch_minute=25,
     )
     if os.path.isfile(path):
         c = ConfigParser.ConfigParser()
