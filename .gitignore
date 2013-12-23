@@ -15,3 +15,5 @@ README.html
 *.sublime-project
 *.sublime-workspace
 .coverage
+*.pyo
+*.pyc
