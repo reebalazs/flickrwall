@@ -52,7 +52,7 @@ def feed(o):
     """
     flickr = flickrapi.FlickrAPI(o['api_key'])
     page = 1
-    while True:
+    while page <= 5: # seems like there are only 5 pages
         sets = flickr.interestingness_getList(page=page, extras="url_o,original_format")
         photos = sets[0]
         for photo in photos:
