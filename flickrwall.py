@@ -11,7 +11,7 @@ import shutil
 import ConfigParser
 import syslog
 
-syslog.openlog('syslog')
+syslog.openlog('flickrwall')
 
 # timeout in seconds
 timeout = 20
