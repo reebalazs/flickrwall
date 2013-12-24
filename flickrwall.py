@@ -1,6 +1,4 @@
 
-from __future__ import print_function
-
 import flickrapi
 import os
 import sys
@@ -11,6 +9,9 @@ import urllib
 import socket
 import shutil
 import ConfigParser
+import syslog
+
+syslog.openlog('syslog')
 
 # timeout in seconds
 timeout = 20
@@ -18,6 +19,7 @@ socket.setdefaulttimeout(timeout)
 
 CONFIG_FILE_NAME = '.flickrwall'
 CONFIG_SECTION = 'flickrwall'
+
 
 def here_path():
     return os.path.abspath(os.path.dirname(sys.modules[__name__].__file__))
@@ -76,15 +78,15 @@ def download(o):
             try:
                 tmp_path, _headers = urllib.urlretrieve(kw['url_o'])
                 downloaded += 1
-                print("NEW (%s)" % (file_name, ))
+                syslog.syslog(syslog.LOG_NOTICE, "NEW (%s)" % (file_name, ))
             except urllib.ContentTooShortError:
-                print("ERR (ContentTooShortError) (%s)" % (file_name, ))
+                syslog.syslog(syslog.LOG_ERR, "ERR (ContentTooShortError) (%s)" % (file_name, ))
             except socket.timeout:
-                print("ERR (timeout) (%s)" % (file_name, ))
+                syslog.syslog(syslog.LOG_ERR, "ERR (timeout) (%s)" % (file_name, ))
             else:
                 shutil.move(tmp_path, path)
         else:
-            print("HIT (%s)" % (file_name, ))
+            syslog.syslog(syslog.LOG_NOTICE, "HIT (%s)" % (file_name, ))
         #print photo.attrib['url_o']
         if downloaded >= o['download_nr']:
             break
@@ -98,18 +100,18 @@ def flush(o):
         fullpath = os.path.join(o['base_dir'], file_name)
         if os.stat(fullpath).st_mtime < (now - o['flush_days'] * 86400):
             if os.path.isfile(fullpath):
-                print("DEL (%s)" % (file_name, ))
+                syslog.syslog(syslog.LOG_NOTICE, "DEL (%s)"% (file_name, ))
                 os.remove(fullpath)
 
 
 def main():
     ts_begin = datetime.datetime.now()
-    print('BEGIN RUN:', ts_begin);
+    syslog.syslog(syslog.LOG_NOTICE, 'BEGIN RUN: %s' % (ts_begin, ))
     o = get_config()
     flush(o)
     download(o)
     ts_end = datetime.datetime.now()
-    print('END RUN, elapsed time:', ts_end - ts_begin);
+    syslog.syslog(syslog.LOG_NOTICE, 'END RUN, elapsed time: %s' % (ts_end - ts_begin, ))
 
 
 if __name__ == '__main__':
