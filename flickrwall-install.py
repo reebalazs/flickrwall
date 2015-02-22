@@ -21,7 +21,7 @@ def gen_plist(o):
     plist['Label'] = 'local.flickrwall'
     plist['StandardOutPath'] = o['logfile_out']
     plist['StandardErrorPath'] = o['logfile_err']
-    plist['StartCalendarInterval'] = dict(Hour=o['launch_hour'], Minute=o['launch_minute'])
+    plist['StartCalendarInterval'] = dict(Hour=int(o['launch_hour']), Minute=int(o['launch_minute']))
     plist['ProgramArguments'] = [
         os.path.join(here, 'bin', 'python'),
         os.path.join(here, 'flickrwall.py'),
