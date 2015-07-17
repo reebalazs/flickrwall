@@ -6,7 +6,7 @@ import time
 import datetime
 import re
 import httplib
-import urllib2
+import urllib
 import urllib2
 import socket
 import shutil
@@ -39,6 +39,12 @@ def get_config():
         logfile_err=os.path.join(here, 'flickrwall_err.log'),
         launch_hour=4,
         launch_minute=25,
+        # HD
+        # min_width=1920,
+        # min_height=1080,
+        # 5K
+        min_width=5120,
+        min_height=2880,
     )
     if os.path.isfile(path):
         c = ConfigParser.ConfigParser()
@@ -46,6 +52,8 @@ def get_config():
         o.update(dict(c.items(CONFIG_SECTION)))
     o['download_nr'] = int(o['download_nr'])
     o['flush_days'] = int(o['flush_days'])
+    o['min_width'] = int(o['min_width'])
+    o['min_height'] = int(o['min_height'])
     return o
 
 
@@ -62,8 +70,7 @@ def feed(o):
             if 'url_o' in photo.attrib:
                 w = int(photo.attrib['width_o'])
                 h = int(photo.attrib['height_o'])
-                # if w >= 1920 and h >= 1080 and w > h:
-                if w >= 5120 and h >= 2880 and w > h:
+                if w >= o['min_width'] and h >= o['min_height'] and w > h:
                     yield photo
         page += 1
 
@@ -81,12 +88,8 @@ def download(o):
         if not os.path.exists(path):
             with tempfile.NamedTemporaryFile(dir='/tmp', delete=False) as tmpfile:
                 try:
-                    # tmp_path, _headers = urllib2.urlretrieve(kw['url_o'])
-                    print kw, tmpfile.name
                     image = urllib2.urlopen(kw['url_o'])
-                    print 111
                     out = file(tmpfile.name ,'wb')
-                    print len(image.read())
                     out.write(image.read())
                     out.flush();
                     downloaded += 1
