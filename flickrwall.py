@@ -59,7 +59,8 @@ def feed(o):
             if 'url_o' in photo.attrib:
                 w = int(photo.attrib['width_o'])
                 h = int(photo.attrib['height_o'])
-                if w >= 1920 and h >= 1080 and w > h:
+                # if w >= 1920 and h >= 1080 and w > h:
+                if w >= 5120 and h >= 2880 and w > h:
                     yield photo
         page += 1
 
