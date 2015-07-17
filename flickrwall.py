@@ -5,11 +5,14 @@ import sys
 import time
 import datetime
 import re
-import urllib
+import httplib
+import urllib2
+import urllib2
 import socket
 import shutil
 import ConfigParser
 import syslog
+import tempfile
 
 syslog.openlog('flickrwall')
 
@@ -76,16 +79,31 @@ def download(o):
         file_name = safe_title + '_%(id)s.%(originalformat)s' % kw
         path = os.path.abspath(os.path.join(o['base_dir'], file_name))
         if not os.path.exists(path):
-            try:
-                tmp_path, _headers = urllib.urlretrieve(kw['url_o'])
-                downloaded += 1
-                syslog.syslog(syslog.LOG_NOTICE, "NEW (%s)" % (file_name, ))
-            except urllib.ContentTooShortError:
-                syslog.syslog(syslog.LOG_ERR, "ERR (ContentTooShortError) (%s)" % (file_name, ))
-            except socket.timeout:
-                syslog.syslog(syslog.LOG_ERR, "ERR (timeout) (%s)" % (file_name, ))
-            else:
-                shutil.move(tmp_path, path)
+            with tempfile.NamedTemporaryFile(dir='/tmp', delete=False) as tmpfile:
+                try:
+                    # tmp_path, _headers = urllib2.urlretrieve(kw['url_o'])
+                    print kw, tmpfile.name
+                    image = urllib2.urlopen(kw['url_o'])
+                    print 111
+                    out = file(tmpfile.name ,'wb')
+                    print len(image.read())
+                    out.write(image.read())
+                    out.flush();
+                    downloaded += 1
+                    syslog.syslog(syslog.LOG_NOTICE, "NEW (%s)" % (file_name, ))
+                except urllib2.HTTPError:
+                    syslog.syslog(syslog.LOG_ERR, "ERR (HTTPError) (%s)" % (file_name, ))
+                except urllib2.URLError:
+                    syslog.syslog(syslog.LOG_ERR, "ERR (URLError) (%s)" % (file_name, ))
+                except httplib.HTTPException:
+                    syslog.syslog(syslog.LOG_ERR, "ERR (HTTPException) (%s)" % (file_name, ))
+                except urllib.ContentTooShortError:
+                    # ... probably not needed, since now we use urllib2.
+                    syslog.syslog(syslog.LOG_ERR, "ERR (ContentTooShortError) (%s)" % (file_name, ))
+                except socket.timeout:
+                    syslog.syslog(syslog.LOG_ERR, "ERR (timeout) (%s)" % (file_name, ))
+                else:
+                    shutil.move(tmpfile.name, path)
         else:
             syslog.syslog(syslog.LOG_NOTICE, "HIT (%s)" % (file_name, ))
         #print photo.attrib['url_o']
