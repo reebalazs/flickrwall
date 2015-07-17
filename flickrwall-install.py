@@ -36,6 +36,8 @@ def gen_config(**kw):
     o.update(**kw)
     if not 'api_key' in o:
         o['api_key'] = raw_input('Please enter your Flickr API key: ')
+    if not 'api_secret' in o:
+        o['api_secret'] = raw_input('Please enter your Flickr API secret: ')
     home = os.path.expanduser("~")
     path = os.path.join(home, CONFIG_FILE_NAME)
     c = ConfigParser.ConfigParser()

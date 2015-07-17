@@ -50,7 +50,7 @@ def feed(o):
     """Infinite feed of interesting images.
     Only landscape images above a given size are considered.
     """
-    flickr = flickrapi.FlickrAPI(o['api_key'])
+    flickr = flickrapi.FlickrAPI(o['api_key'], o['api_secret'])
     page = 1
     while page <= 5: # seems like there are only 5 pages
         sets = flickr.interestingness_getList(page=page, extras="url_o,original_format")
