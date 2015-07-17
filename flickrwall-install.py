@@ -53,6 +53,8 @@ def main():
     kw = {}
     if len(args) >= 1:
         kw['api_key'] = args[0]
+    if len(args) >= 2:
+        kw['api_secret'] = args[1]
     o = gen_config(**kw)
     gen_plist(o)
 
